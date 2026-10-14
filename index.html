@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>CIT - LIBRARY BLOCK LIFT MONITORING SYSTEM</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- jsPDF & AutoTable CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        tech: {
+                            slate: '#0F172A',
+                            dark: '#1E293B',
+                            emerald: '#059669',
+                            emeraldLight: '#10B981',
+                            teal: '#0D9488',
+                            cyan: '#0284C7',
+                            cardBg: '#FFFFFF',
+                            border: '#E2E8F0',
+                            bg: '#F8FAFC'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #F8FAFC;
+            color: #0F172A;
+        }
+
+        /* Custom scrollbar for pure white tech theme */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F1F5F9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94A3B8;
+        }
+    </style>
+</head>
+<body class="h-screen max-h-screen overflow-hidden bg-slate-50 text-slate-900 antialiased flex flex-col uppercase">
+
+    <!-- ========================================== -->
+    <!-- 1. LOGIN PAGE VIEW                         -->
+    <!-- ========================================== -->
+    <div id="login-page" class="min-h-screen flex flex-col items-center justify-center p-4 bg-white overflow-y-auto">
+        <div class="max-w-md w-full bg-white rounded-2xl shadow-xl border border-slate-200 p-8 text-center transition-all duration-300">
+            <!-- Official College Logo -->
+            <div class="mb-6 flex justify-center">
+                <div class="w-28 h-28 rounded-full bg-white p-2 border-4 border-emerald-600 flex items-center justify-center shadow-lg relative">
+                    <img src="cit_logo.png" alt="CIT LOGO" class="w-full h-full object-contain rounded-full" onerror="this.onerror=null; this.src='https://cit.edu.in/uploads/home/1768995276_Group78.png';">
+                </div>
+            </div>
+
+            <!-- Headings -->
+            <h1 class="text-xl font-black text-slate-900 uppercase tracking-tight leading-snug">
+                COIMBATORE INSTITUTE OF TECHNOLOGY
+            </h1>
+            <h2 class="text-sm font-bold text-emerald-700 mt-1 uppercase">
+                DEPARTMENT OF ELECTRICAL & ELECTRONICS ENGINEERING
+            </h2>
+            <div class="mt-3 inline-block bg-slate-900 text-emerald-400 text-xs font-black px-4 py-1.5 rounded-full uppercase tracking-wide shadow-sm">
+                LIBRARY BLOCK LIFT MONITORING SYSTEM
+            </div>
+
+            <!-- Login Credentials Block -->
+            <form id="login-form" class="mt-8 text-left space-y-5" onsubmit="handleLogin(event)">
+                <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+                    <!-- Username / Name -->
+                    <div class="mb-4">
+                        <label class="block text-xs font-black text-slate-700 mb-1 uppercase">TECHNICIAN NAME</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400 text-xs">
+                                <i class="fa-solid fa-id-badge"></i>
+                            </span>
+                            <input type="text" id="login-name" value="Lab technician" required
+                                class="w-full pl-9 pr-3 py-2.5 text-sm bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-900 font-bold uppercase">
+                        </div>
+                    </div>
+
+                    <!-- Password -->
+                    <div>
+                        <label class="block text-xs font-black text-slate-700 mb-1 uppercase">PASSWORD</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400 text-xs">
+                                <i class="fa-solid fa-key"></i>
+                            </span>
+                            <input type="password" id="login-password" value="2026" placeholder="ENTER PASSWORD" required
+                                class="w-full pl-9 pr-10 py-2.5 text-sm bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-900 font-bold">
+                            <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-700 text-xs focus:outline-none">
+                                <i id="pass-eye-icon" class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Error Alert -->
+                <div id="login-error" class="hidden p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-lg flex items-center gap-2 font-bold">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <span>INVALID PASSWORD. PLEASE TRY AGAIN.</span>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="w-full py-3.5 px-4 bg-slate-900 hover:bg-slate-800 text-emerald-400 font-black rounded-xl shadow-lg transition-all duration-200 flex items-center justify-center gap-2 text-sm uppercase tracking-wider cursor-pointer">
+                    <i class="fa-solid fa-right-to-bracket"></i>
+                    <span>LOG IN</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 2. LOADING PAGE VIEW (2 Seconds Countdown) -->
+    <!-- ========================================== -->
+    <div id="loading-page" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex flex-col items-center justify-center p-6 text-center">
+        <div class="bg-white border border-slate-200 rounded-2xl shadow-xl p-8 max-w-sm w-full flex flex-col items-center space-y-4">
+            <div class="w-12 h-12 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-xl font-bold">
+                <i class="fa-solid fa-spinner animate-spin"></i>
+            </div>
+            <div class="text-2xl font-black text-slate-900 font-mono">
+                <span id="countdown-timer">2</span><span class="text-emerald-600 text-base">S</span>
+            </div>
+            <h2 class="text-xs font-black text-slate-800 uppercase tracking-wide">
+                CONNECTING TO LIBRARY BLOCK LIFT...
+            </h2>
+            <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden border border-slate-200">
+                <div id="loading-bar" class="bg-emerald-600 h-2 rounded-full transition-all duration-200" style="width: 0%"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 3. MONITORING DASHBOARD PAGE VIEW          -->
+    <!-- ========================================== -->
+    <div id="monitoring-page" class="hidden flex-col h-screen max-h-screen overflow-hidden bg-white">
+        
+        <!-- TOP HEADER BAR -->
+        <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-4">
+                
+                <!-- Left Branding -->
+                <div class="flex items-center space-x-3">
+                    <div class="w-11 h-11 rounded-full bg-white p-1 border-2 border-emerald-600 flex items-center justify-center shadow-sm">
+                        <img src="cit_logo.png" alt="CIT LOGO" class="w-full h-full object-contain rounded-full" onerror="this.onerror=null; this.src='https://cit.edu.in/uploads/home/1768995276_Group78.png';">
+                    </div>
+                    <div>
+                        <h1 class="text-base font-black text-slate-900 leading-tight uppercase">
+                            COIMBATORE INSTITUTE OF TECHNOLOGY
+                        </h1>
+                        <p class="text-xs font-bold text-emerald-700 uppercase">
+                            DEPT OF EEE &bull; LIBRARY BLOCK LIFT MONITORING SYSTEM
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Middle Hardware Status & Live Clock -->
+                <div class="flex items-center gap-4">
+                    <!-- Lift Status Badge -->
+                    <div class="flex items-center gap-2 bg-slate-100 px-3.5 py-1.5 rounded-xl border border-slate-200 shadow-inner">
+                        <span class="text-xs font-black text-slate-700 uppercase">LIFT STATUS:</span>
+                        <span id="header-status-badge" class="px-2.5 py-0.5 rounded-full text-xs font-black bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span> ONLINE
+                        </span>
+                    </div>
+
+                    <!-- Live Clock -->
+                    <div class="bg-white px-3 py-1.5 rounded-xl border border-slate-300 text-xs font-mono font-bold text-slate-800 shadow-xs flex items-center gap-2">
+                        <i class="fa-regular fa-clock text-emerald-600"></i>
+                        <span id="live-clock">10:45:00 AM</span>
+                    </div>
+                </div>
+
+                <!-- Right Technician & Logout -->
+                <div class="flex items-center space-x-3">
+                    <div class="text-right hidden sm:block">
+                        <div id="user-display-name" class="text-xs font-black text-slate-900 uppercase">Lab technician</div>
+                        <div class="text-[10px] text-emerald-700 font-bold flex items-center justify-end gap-1 uppercase">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> ACTIVE MONITORING
+                        </div>
+                    </div>
+                    <button onclick="handleLogout()" class="px-3 py-1.5 text-xs font-black bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-lg transition border border-slate-300 flex items-center gap-1.5 uppercase cursor-pointer">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                        <span>LOGOUT</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- DASHBOARD BODY CONTENT -->
+        <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-3 space-y-3">
+            
+            <!-- CENTERED LIFT DRIVE BANNER ABOVE STATUS OF LIFT & LIFT OPERATION -->
+            <div class="w-full bg-white border-2 border-emerald-600 rounded-xl py-2 px-4 text-center shadow-xs">
+                <h2 class="text-base sm:text-lg font-black text-slate-900 tracking-wide uppercase flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-bolt-lightning text-emerald-600 text-lg"></i>
+                    <span>LIFT DRIVE — INTERMITTENT VARIABLE-LOAD DUTY</span>
+                    <i class="fa-solid fa-bolt-lightning text-emerald-600 text-lg"></i>
+                </h2>
+            </div>
+
+            <!-- MAIN GRID LAYOUT (8 cols left, 4 cols right sidebar) -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+
+                <!-- LEFT COLUMN (8 COLS): STATUS OF LIFT, LIFT OPERATION & TORQUE GRAPH -->
+                <div class="lg:col-span-8 space-y-3 flex flex-col justify-between">
+                    
+                    <!-- Top Sub-Grid: Status of Lift & Lift Operation (EXTRA COMPACT) -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        
+                        <!-- Box 1: STATUS OF LIFT (EXTRA COMPACT) -->
+                        <div class="bg-white border border-slate-200 rounded-xl p-2.5 shadow-xs flex flex-col justify-between">
+                            <span class="text-[10px] font-black text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+                                <i class="fa-solid fa-power-off text-emerald-600"></i> STATUS OF LIFT
+                            </span>
+                            
+                            <div class="bg-slate-50 p-2 rounded-lg border border-slate-200 flex items-center justify-between mt-1">
+                                <div>
+                                    <div class="text-[9px] text-slate-500 font-bold uppercase">CURRENT HARDWARE STATE</div>
+                                    <div id="lift-state-text" class="text-xs font-black text-emerald-700 uppercase">LIFT IDLE AT FLOOR 0</div>
+                                </div>
+                                <div id="lift-state-icon" class="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs">
+                                    <i class="fa-solid fa-circle-check"></i>
+                                </div>
+                            </div>
+
+                            <div class="mt-1.5 text-[9px] text-slate-500 font-bold border-t border-slate-100 pt-1 flex items-center gap-1">
+                                <i class="fa-solid fa-microchip text-emerald-600 text-[9px]"></i>
+                                <span>MQTT REAL-TIME SENSOR ACTIVE</span>
+                            </div>
+                        </div>
+
+                        <!-- Box 2: LIFT OPERATION (EXTRA COMPACT) -->
+                        <div class="bg-white border border-slate-200 rounded-xl p-2.5 shadow-xs flex flex-col justify-between">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[10px] font-black text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+                                    <i class="fa-solid fa-arrows-up-down text-emerald-600"></i> LIFT OPERATION
+                                </span>
+                                <span id="op-direction-badge" class="px-2 py-0.5 rounded bg-slate-200 text-slate-700 text-[9px] font-black uppercase">IDLE</span>
+                            </div>
+
+                            <div class="mt-1">
+                                <!-- Dynamic Operation Container -->
+                                <div id="op-container" class="flex items-center justify-center p-1.5 bg-slate-50 rounded-lg border border-slate-200 min-h-[34px]">
+                                    <span id="op-idle-text" class="px-3 py-0.5 text-[10px] font-black rounded bg-slate-200 text-slate-700 uppercase tracking-wider">
+                                        IDLE
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- TORQUE VS TIME GRAPH (PERFECTLY FITS ON SCREEN) -->
+                    <div class="bg-white border border-slate-200 rounded-2xl p-3 shadow-sm flex-1 flex flex-col justify-between">
+                        <div class="flex flex-wrap items-center justify-between border-b border-slate-200 pb-2 mb-2 gap-2">
+                            <div class="flex items-center gap-3">
+                                <h2 class="text-sm font-black text-slate-900 flex items-center gap-2 uppercase tracking-wide">
+                                    <i class="fa-solid fa-chart-line text-emerald-600 text-base"></i> TORQUE VS TIME GRAPH
+                                </h2>
+                                <button onclick="downloadGraphImage()" class="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-emerald-400 text-[10px] font-black rounded-lg transition flex items-center gap-1.5 uppercase cursor-pointer border border-slate-700 shadow-xs">
+                                    <i class="fa-solid fa-file-image text-xs"></i> DOWNLOAD IMAGE
+                                </button>
+                            </div>
+                            <div class="flex items-center space-x-3 text-[10px] uppercase font-black">
+                                <span class="flex items-center gap-1.5 text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                                    <span class="w-2 h-2 bg-emerald-500 rounded-xs"></span> TORQUE (UP)
+                                </span>
+                                <span class="flex items-center gap-1.5 text-red-700 bg-red-50 px-2 py-0.5 rounded border border-red-200">
+                                    <span class="w-2 h-2 bg-red-500 rounded-xs"></span> TORQUE (DOWN)
+                                </span>
+                                <span class="flex items-center gap-1.5 text-slate-700 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                                    <span class="w-2 h-2 bg-slate-400 rounded-xs"></span> 0 NM (IDLE / OFF)
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Canvas Chart Container (Horizontally Scrollable Graph - 270px Height Fits 100% On Screen) -->
+                        <div id="torque-chart-scroll-container" class="relative w-full bg-white rounded-xl p-2 border border-slate-200 shadow-inner overflow-x-auto overflow-y-hidden flex-1" style="height: 270px !important; min-height: 270px !important;">
+                            <div id="chart-scroll-wrapper" style="min-width: 100%; height: 100%; position: relative;">
+                                <canvas id="torqueChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- RIGHT COLUMN (4 COLS): TALL SIDEBAR WITH DOWNLOAD PDF & DATA TABLE -->
+                <div class="lg:col-span-4 bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <!-- Top Download PDF & Image Buttons -->
+                        <div class="space-y-2 mb-3 border-b border-slate-200 pb-3">
+                            <button onclick="generatePDFReport()" class="w-full py-2 px-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-lg shadow-xs transition text-[11px] uppercase flex items-center justify-center gap-2 tracking-wider cursor-pointer">
+                                <i class="fa-solid fa-file-pdf text-xs"></i>
+                                <span>DOWNLOAD PDF REPORT</span>
+                            </button>
+                            <button onclick="downloadGraphImage()" class="w-full py-2 px-3 bg-slate-900 hover:bg-slate-800 text-emerald-400 font-black rounded-lg shadow-xs transition text-[11px] uppercase flex items-center justify-center gap-2 tracking-wider cursor-pointer">
+                                <i class="fa-solid fa-file-image text-xs"></i>
+                                <span>DOWNLOAD GRAPH IMAGE</span>
+                            </button>
+                        </div>
+
+                        <h3 class="text-sm font-black text-slate-900 uppercase tracking-wider mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-database text-emerald-600"></i> DATA
+                        </h3>
+
+                        <!-- Data Log Table (Vertically Scrollable Up/Down Container - 270px Height) -->
+                        <div class="overflow-y-auto overflow-x-auto max-h-[270px] rounded-xl border border-slate-200">
+                            <table id="log-table" class="w-full text-left border-collapse text-[10px] uppercase">
+                                <thead class="sticky top-0 z-10 shadow-xs">
+                                    <tr class="bg-slate-900 text-emerald-400 font-black uppercase tracking-wider text-[9.5px]">
+                                        <th class="py-2 px-2 whitespace-nowrap">TIME</th>
+                                        <th class="py-2 px-2 whitespace-nowrap">STATUS</th>
+                                        <th class="py-2 px-2 whitespace-nowrap">LIFT OPERATION</th>
+                                        <th class="py-2 px-2 whitespace-nowrap">TORQUE</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="log-table-body" class="divide-y divide-slate-100 bg-white text-[10px]">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+    <!-- ========================================== -->
+    <!-- APPLICATION JAVASCRIPT LOGIC               -->
+    <!-- ========================================== -->
+    <script>
+        // --- GLOBAL APP STATE ---
+        let currentTechnician = "Lab technician";
+        let isHardwareOn = true;
+        let activeDirection = "IDLE";
+        let currentTorque = 0.00;
+
+        // Chart & Telemetry Data
+        let torqueChart = null;
+        let logHistory = [
+            { time: "10.45 AM", status: "ON", op: "LIFT IDLE AT FLOOR 0", torque: "0.00 NM" }
+        ];
+
+        // --- 1. LOGIN SYSTEM ---
+        function togglePasswordVisibility() {
+            const passInput = document.getElementById('login-password');
+            const eyeIcon = document.getElementById('pass-eye-icon');
+            if (passInput.type === 'password') {
+                passInput.type = 'text';
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            } else {
+                passInput.type = 'password';
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            }
+        }
+
+        function handleLogin(event) {
+            if (event) event.preventDefault();
+            const nameInput = document.getElementById('login-name');
+            const passInput = document.getElementById('login-password');
+            const errorAlert = document.getElementById('login-error');
+
+            const name = nameInput ? nameInput.value.trim() : "Lab technician";
+            const password = passInput ? passInput.value.trim() : "";
+
+            if (password === "2026") {
+                if (errorAlert) errorAlert.classList.add('hidden');
+                currentTechnician = name || "Lab technician";
+                const userDisplay = document.getElementById('user-display-name');
+                if (userDisplay) userDisplay.innerText = currentTechnician;
+
+                // Start 2 Seconds Loading Page
+                triggerLoadingScreen();
+            } else {
+                if (errorAlert) errorAlert.classList.remove('hidden');
+            }
+            return false;
+        }
+
+        // --- 2. 2-SECONDS LOADING PAGE LOGIC ---
+        function triggerLoadingScreen() {
+            const loginPage = document.getElementById('login-page');
+            const loadingPage = document.getElementById('loading-page');
+            const monitoringPage = document.getElementById('monitoring-page');
+
+            if (loginPage) loginPage.classList.add('hidden');
+            if (loadingPage) loadingPage.classList.remove('hidden');
+
+            let secondsLeft = 2;
+            const timerEl = document.getElementById('countdown-timer');
+            const barEl = document.getElementById('loading-bar');
+            const percentEl = document.getElementById('progress-percent');
+
+            if (timerEl) timerEl.innerText = secondsLeft;
+            if (barEl) barEl.style.width = '0%';
+            if (percentEl) percentEl.innerText = '0%';
+
+            let elapsedTime = 0;
+            const totalMs = 2000;
+            const stepMs = 100;
+
+            const interval = setInterval(() => {
+                elapsedTime += stepMs;
+                const progress = Math.min(100, Math.round((elapsedTime / totalMs) * 100));
+                
+                if (barEl) barEl.style.width = `${progress}%`;
+                if (percentEl) percentEl.innerText = `${progress}%`;
+
+                if (elapsedTime >= 1000 && secondsLeft > 1) {
+                    secondsLeft = 1;
+                    if (timerEl) timerEl.innerText = secondsLeft;
+                }
+
+                if (elapsedTime >= totalMs) {
+                    clearInterval(interval);
+                    if (timerEl) timerEl.innerText = 0;
+                    if (loadingPage) loadingPage.classList.add('hidden');
+                    if (monitoringPage) {
+                        monitoringPage.classList.remove('hidden');
+                        monitoringPage.classList.add('flex');
+                    }
+                    initDashboard();
+                }
+            }, stepMs);
+        }
+
+        function handleLogout() {
+            const monitoringPage = document.getElementById('monitoring-page');
+            const loginPage = document.getElementById('login-page');
+            if (monitoringPage) {
+                monitoringPage.classList.add('hidden');
+                monitoringPage.classList.remove('flex');
+            }
+            if (loginPage) loginPage.classList.remove('hidden');
+        }
+
+        // --- 3. DASHBOARD INITIALIZATION ---
+        function initDashboard() {
+            startClock();
+            initTorqueChart();
+        }
+
+        function startClock() {
+            setInterval(() => {
+                const now = new Date();
+                let hours = now.getHours();
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                const seconds = String(now.getSeconds()).padStart(2, '0');
+                const ampm = hours >= 12 ? 'PM' : 'AM';
+                hours = hours % 12;
+                hours = hours ? hours : 12; 
+                const timeStr = `${String(hours).padStart(2, '0')}:${minutes}:${seconds} ${ampm}`;
+                const clockEl = document.getElementById('live-clock');
+                if (clockEl) clockEl.innerText = timeStr;
+            }, 1000);
+        }
+
+        function getFormattedTime() {
+            const now = new Date();
+            let hours = now.getHours();
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12;
+            return `${hours}:${minutes}:${seconds} ${ampm}`;
+        }
+
+        function adjustChartScrollWidth() {
+            const container = document.getElementById('torque-chart-scroll-container');
+            const wrapper = document.getElementById('chart-scroll-wrapper');
+            if (container && wrapper && torqueChart) {
+                const pointCount = torqueChart.data.labels.length;
+                const minPointWidth = 35; // 35px per data point
+                const calculatedWidth = Math.max(container.clientWidth - 10, pointCount * minPointWidth);
+                wrapper.style.width = calculatedWidth + 'px';
+            }
+        }
+
+        function scrollToLatestData() {
+            const container = document.getElementById('torque-chart-scroll-container');
+            if (container) {
+                // Auto scroll to rightmost edge for live updates
+                container.scrollLeft = container.scrollWidth;
+            }
+        }
+
+        // --- 4. DYNAMIC TORQUE VS TIME CHART ---
+        function initTorqueChart() {
+            const chartCanvas = document.getElementById('torqueChart');
+            if (!chartCanvas) return;
+            const ctx = chartCanvas.getContext('2d');
+            
+            const now = new Date();
+            const labels = [];
+            const values = [0.00, 0.00, 0.00, 0.00, 0.00];
+            for (let i = 4; i >= 0; i--) {
+                const pastTime = new Date(now.getTime() - i * 1000);
+                let h = pastTime.getHours();
+                const m = String(pastTime.getMinutes()).padStart(2, '0');
+                const s = String(pastTime.getSeconds()).padStart(2, '0');
+                const ap = h >= 12 ? 'PM' : 'AM';
+                h = h % 12;
+                h = h ? h : 12;
+                labels.push(`${h}:${m}:${s} ${ap}`);
+            }
+
+            if (torqueChart) torqueChart.destroy();
+
+            torqueChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'TORQUE (NM)',
+                        data: values,
+                        borderColor: '#059669', // Modern Emerald Green
+                        backgroundColor: 'rgba(5, 150, 105, 0.08)',
+                        borderWidth: 4,
+                        stepped: true,
+                        pointRadius: 6,
+                        pointBackgroundColor: '#0F172A',
+                        pointHoverRadius: 9,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            min: -75,
+                            max: 75,
+                            title: {
+                                display: true,
+                                text: 'TORQUE (Nm)',
+                                font: { weight: 'bold', size: 14 }
+                            },
+                            ticks: {
+                                font: { weight: 'bold', size: 12 }
+                            },
+                            grid: {
+                                color: (context) => context.tick.value === 0 ? '#0F172A' : '#E2E8F0',
+                                lineWidth: (context) => context.tick.value === 0 ? 2.5 : 1
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'TIME',
+                                font: { weight: 'bold', size: 14 }
+                            },
+                            ticks: {
+                                font: { weight: 'bold', size: 12 }
+                            },
+                            grid: {
+                                color: '#E2E8F0'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const val = context.parsed.y;
+                                    if (val > 0) return ` TORQUE: +VE ${val} NM (MOVING UP)`;
+                                    if (val < 0) return ` TORQUE: -VE ${val} NM (MOVING DOWN)`;
+                                    return ` TORQUE: 0.00 NM (IDLE / OFF)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Live updates every 1 second
+            setInterval(() => {
+                if (torqueChart) {
+                    const timeNow = getFormattedTime();
+                    torqueChart.data.labels.push(timeNow);
+                    torqueChart.data.datasets[0].data.push(currentTorque);
+                    adjustChartScrollWidth();
+                    torqueChart.update();
+                    scrollToLatestData();
+                }
+            }, 1000);
+        }
+
+        // --- 5. LOG TABLE & PDF GENERATION ---
+        function addLogEntry(time, status, op, torque) {
+            logHistory.push({ time, status, op, torque });
+            const tbody = document.getElementById('log-table-body');
+            if (!tbody) return;
+            const row = document.createElement('tr');
+            row.className = "hover:bg-slate-50 transition";
+
+            let statusColor = status === "ON" ? "text-emerald-600" : "text-red-600";
+            let torqueColor = "text-slate-600";
+            if (torque.includes("+VE")) torqueColor = "text-emerald-700 font-bold";
+            if (torque.includes("-VE")) torqueColor = "text-red-700 font-bold";
+
+            row.innerHTML = `
+                <td class="py-1.5 px-2 font-mono text-slate-700 font-bold whitespace-nowrap text-[10px]">${time}</td>
+                <td class="py-1.5 px-2 font-black ${statusColor} whitespace-nowrap text-[10px]">${status}</td>
+                <td class="py-1.5 px-2 font-bold text-slate-800 whitespace-nowrap text-[10px]">${op}</td>
+                <td class="py-1.5 px-2 font-mono ${torqueColor} whitespace-nowrap text-[10px]">${torque}</td>
+            `;
+            tbody.appendChild(row);
+
+            // Auto-scroll the Data Column to bottom on new push button entry
+            const scrollContainer = tbody.closest('.overflow-y-auto');
+            if (scrollContainer) {
+                scrollContainer.scrollTop = scrollContainer.scrollHeight;
+            }
+        }
+
+        function generatePDFReport() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Header - College Branding
+            doc.setFillColor(15, 23, 42); // Pure Tech Slate #0F172A
+            doc.rect(0, 0, 210, 35, 'F');
+
+            try {
+                const img = new Image();
+                img.src = 'cit_logo.png';
+                doc.addImage(img, 'PNG', 10, 5, 25, 25);
+            } catch(e) {}
+
+            doc.setTextColor(255, 255, 255);
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(14);
+            doc.text("COIMBATORE INSTITUTE OF TECHNOLOGY", 115, 14, { align: "center" });
+
+            doc.setTextColor(16, 185, 129); // Emerald Green
+            doc.setFontSize(10);
+            doc.text("DEPARTMENT OF ELECTRICAL & ELECTRONICS ENGINEERING", 115, 22, { align: "center" });
+
+            doc.setFontSize(9);
+            doc.setTextColor(255, 255, 255);
+            doc.text("LIBRARY BLOCK LIFT MONITORING SYSTEM - TELEMETRY REPORT", 115, 29, { align: "center" });
+
+            // Report Meta Info Box (Clean Multi-Line Layout - Fits 100% inside PDF margins)
+            doc.setFillColor(248, 250, 252);
+            doc.rect(14, 40, 182, 32, 'F');
+            doc.setDrawColor(226, 232, 240);
+            doc.rect(14, 40, 182, 32, 'S');
+
+            doc.setTextColor(15, 23, 42);
+            doc.setFontSize(8.5);
+            doc.setFont("helvetica", "bold");
+            doc.text(`TECHNICIAN NAME : ${currentTechnician.toUpperCase()}`, 18, 48);
+            doc.text(`GENERATED DATE  : ${new Date().toLocaleDateString()}`, 18, 56);
+            doc.text(`HARDWARE STATUS : ONLINE`, 18, 64);
+
+            doc.text(`DUTY TYPE : LIFT DRIVE`, 110, 48);
+            doc.text(`DUTY CYCLE: INTERMITTENT VARIABLE-LOAD DUTY`, 110, 56);
+
+            // Table Header Title
+            doc.setTextColor(15, 23, 42);
+            doc.setFontSize(10.5);
+            doc.setFont("helvetica", "bold");
+            doc.text("LIFT TELEMETRY & TORQUE OPERATIONS LOG TABLE", 14, 80);
+
+            // Data Table Preparation
+            const tableRows = logHistory.map(item => [item.time, item.status, item.op, item.torque]);
+
+            doc.autoTable({
+                startY: 85,
+                head: [['TIME', 'STATUS', 'LIFT OPERATION', 'TORQUE (NM)']],
+                body: tableRows,
+                headStyles: {
+                    fillColor: [15, 23, 42],
+                    textColor: [16, 185, 129],
+                    fontStyle: 'bold',
+                    fontSize: 9
+                },
+                bodyStyles: {
+                    fontSize: 8,
+                    textColor: [30, 41, 59]
+                },
+                alternateRowStyles: {
+                    fillColor: [248, 250, 252]
+                },
+                margin: { left: 14, right: 14 }
+            });
+
+            // Footer Sign-off
+            const finalY = doc.lastAutoTable.finalY + 15;
+            doc.setFontSize(9);
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(100, 100, 100);
+            doc.text("LAB TECHNICIAN SIGNATURE: _______________________", 14, finalY);
+            doc.text("DEPARTMENT SEAL", 140, finalY);
+
+            // Save PDF
+            doc.save("CIT_Library_Block_Lift_Report.pdf");
+        }
+
+        function downloadGraphImage() {
+            const chartCanvas = document.getElementById('torqueChart');
+            if (!chartCanvas) return;
+
+            // Render on temporary white background canvas
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = chartCanvas.width;
+            tempCanvas.height = chartCanvas.height;
+            const ctx = tempCanvas.getContext('2d');
+
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+            ctx.drawImage(chartCanvas, 0, 0);
+
+            // Export PNG image
+            const imageURI = tempCanvas.toDataURL('image/png');
+            const link = document.createElement('a');
+            link.download = `CIT_Lift_Torque_Graph_${new Date().toISOString().slice(0, 10)}.png`;
+            link.href = imageURI;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // --- 6. REAL-TIME HARDWARE WEBSOCKET INTEGRATION ---
+        function connectHardwareWebSocket() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}`;
+            
+            console.log("🔌 Connecting WebSocket to server at:", wsUrl);
+            const ws = new WebSocket(wsUrl);
+
+            ws.onopen = () => {
+                console.log("✅ WebSocket hardware connection active!");
+                // Trigger Hardware Reset to Ground Floor on Page Load/Refresh
+                try {
+                    ws.send(JSON.stringify({ command: "RESET_TO_GROUND" }));
+                    fetch('/api/reset', { method: 'POST' }).catch(e => {});
+                } catch(e) {}
+            };
+
+            ws.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    console.log("📡 Live Hardware Telemetry Payload:", data);
+
+                    // Extract telemetry fields safely
+                    const status = (data.status || "ON").toUpperCase();
+                    const operation = (data.operation || data.op || "IDLE").toUpperCase();
+                    const rawTorque = typeof data.torque === 'number' ? data.torque : parseFloat(data.torque) || 0.00;
+                    currentTorque = rawTorque;
+
+                    // 1. Update Hardware State Text
+                    const liftStateText = document.getElementById('lift-state-text');
+                    if (liftStateText) liftStateText.innerText = operation;
+
+                    // 2. Update Operation Badge
+                    const opDirectionBadge = document.getElementById('op-direction-badge');
+                    if (opDirectionBadge) opDirectionBadge.innerText = operation;
+
+                    const opContainer = document.getElementById('op-container');
+                    if (opContainer) {
+                        opContainer.innerHTML = `<span class="px-2.5 py-0.5 text-[10px] font-black rounded bg-emerald-600 text-white uppercase tracking-wider animate-pulse">${operation}</span>`;
+                    }
+
+                    // 3. Update Real-Time Torque Chart Immediately
+                    if (torqueChart) {
+                        const timeNow = getFormattedTime();
+                        torqueChart.data.labels.push(timeNow);
+                        torqueChart.data.datasets[0].data.push(currentTorque);
+                        adjustChartScrollWidth();
+                        torqueChart.update();
+                        scrollToLatestData();
+                    }
+
+                    // 4. Record to Log Table (STRICTLY for hardware button operations UP / DOWN / REACHED - Excludes idle heartbeats)
+                    if (operation.includes("UP") || operation.includes("DOWN") || operation.includes("REACHED")) {
+                        const torqueStr = currentTorque > 0 ? `+VE ${currentTorque.toFixed(2)} NM` :
+                                         currentTorque < 0 ? `-VE ${Math.abs(currentTorque).toFixed(2)} NM` : `0.00 NM`;
+                        addLogEntry(getFormattedTime(), status, operation, torqueStr);
+                    }
+
+                } catch (err) {
+                    console.warn("Telemetry message:", event.data);
+                }
+            };
+
+            ws.onclose = () => {
+                console.log("⚠️ WebSocket disconnected. Reconnecting in 3s...");
+                setTimeout(connectHardwareWebSocket, 3000);
+            };
+        }
+
+        // Auto-connect hardware listener on load
+        connectHardwareWebSocket();
+
+        // Helper function for manual hardware signal testing
+        let simCycle = 0;
+        function simulateHardwareSignal() {
+            simCycle = (simCycle + 1) % 4;
+            let samplePayload;
+            if (simCycle === 1) {
+                samplePayload = { status: "ON", operation: "UP FROM FLOOR '0'", torque: 50.85 };
+            } else if (simCycle === 2) {
+                samplePayload = { status: "ON", operation: "REACHED FLOOR 1", torque: 0.00 };
+            } else if (simCycle === 3) {
+                samplePayload = { status: "ON", operation: "DOWN FROM FLOOR '1'", torque: -50.85 };
+            } else {
+                samplePayload = { status: "ON", operation: "REACHED FLOOR 0", torque: 0.00 };
+            }
+            
+            // Send payload via HTTP POST API to server
+            fetch('/api/telemetry', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(samplePayload)
+            }).then(res => res.json()).then(data => {
+                console.log("Test signal sent:", data);
+            }).catch(err => console.error(err));
+        }
+    </script>
+</body>
+</html>
